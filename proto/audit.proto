@@ -1,0 +1,44 @@
+syntax="proto3";
+
+package audit;
+
+option go_package = "github.com/urishabh12/audit_logs";
+
+service AuditService {
+    rpc Log(LogRequest) returns (LogResponse) {}
+    rpc GetLogForTenantByEntity(LogByEntityRequest) returns (LogsResponse) {}
+}
+
+message LogRequest {
+    int64 TenantID = 1;
+    int64 UserID = 2;
+    int64 Timestamp = 3;
+    int64 EntityID = 4;
+    string Entity = 5;
+    string Action = 6;
+    string Data = 7;
+}
+
+message LogByEntityRequest {
+    int64 TenantID = 1;
+    string Entity = 5;
+    int64 Timestamp = 3;
+}
+
+message LogsResponse {
+    repeated AuditLog Logs  = 1;
+}
+
+message AuditLog {
+    int64 TenantID = 1;
+    int64 UserID = 2;
+    int64 Timestamp = 3;
+    int64 EntityID = 4;
+    string Entity = 5;
+    string Action = 6;
+    string Data = 7;
+}
+
+message LogResponse {
+    bool status = 1;
+}
