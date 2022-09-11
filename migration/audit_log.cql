@@ -1,6 +1,6 @@
 CREATE KEYSPACE audit WITH REPLICATION = { 
-   'class' : 'NetworkTopologyStrategy',
-   'datacenter1' : 3 
+   'class' : 'SimpleStrategy',
+   'replication_factor' : 1
 };
 
 CREATE TABLE audit.audit_logs (
