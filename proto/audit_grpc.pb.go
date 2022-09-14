@@ -23,7 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuditServiceClient interface {
 	Log(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
-	GetLogForTenantByEntity(ctx context.Context, in *LogByEntityRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	GetLogByEntity(ctx context.Context, in *LogByEntityRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	GetLogByEntityAndEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 }
 
 type auditServiceClient struct {
@@ -43,9 +44,18 @@ func (c *auditServiceClient) Log(ctx context.Context, in *LogRequest, opts ...gr
 	return out, nil
 }
 
-func (c *auditServiceClient) GetLogForTenantByEntity(ctx context.Context, in *LogByEntityRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
+func (c *auditServiceClient) GetLogByEntity(ctx context.Context, in *LogByEntityRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
 	out := new(LogsResponse)
-	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogForTenantByEntity", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogByEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *auditServiceClient) GetLogByEntityAndEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
+	out := new(LogsResponse)
+	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogByEntityAndEntityID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +67,8 @@ func (c *auditServiceClient) GetLogForTenantByEntity(ctx context.Context, in *Lo
 // for forward compatibility
 type AuditServiceServer interface {
 	Log(context.Context, *LogRequest) (*LogResponse, error)
-	GetLogForTenantByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error)
+	GetLogByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error)
+	GetLogByEntityAndEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error)
 }
 
 // UnimplementedAuditServiceServer should be embedded to have forward compatible implementations.
@@ -67,8 +78,11 @@ type UnimplementedAuditServiceServer struct {
 func (UnimplementedAuditServiceServer) Log(context.Context, *LogRequest) (*LogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Log not implemented")
 }
-func (UnimplementedAuditServiceServer) GetLogForTenantByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLogForTenantByEntity not implemented")
+func (UnimplementedAuditServiceServer) GetLogByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntity not implemented")
+}
+func (UnimplementedAuditServiceServer) GetLogByEntityAndEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntityAndEntityID not implemented")
 }
 
 // UnsafeAuditServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -100,20 +114,38 @@ func _AuditService_Log_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuditService_GetLogForTenantByEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuditService_GetLogByEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LogByEntityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuditServiceServer).GetLogForTenantByEntity(ctx, in)
+		return srv.(AuditServiceServer).GetLogByEntity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/audit.AuditService/GetLogForTenantByEntity",
+		FullMethod: "/audit.AuditService/GetLogByEntity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuditServiceServer).GetLogForTenantByEntity(ctx, req.(*LogByEntityRequest))
+		return srv.(AuditServiceServer).GetLogByEntity(ctx, req.(*LogByEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuditService_GetLogByEntityAndEntityID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogByEntityIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditServiceServer).GetLogByEntityAndEntityID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/audit.AuditService/GetLogByEntityAndEntityID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditServiceServer).GetLogByEntityAndEntityID(ctx, req.(*LogByEntityIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -130,8 +162,12 @@ var AuditService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuditService_Log_Handler,
 		},
 		{
-			MethodName: "GetLogForTenantByEntity",
-			Handler:    _AuditService_GetLogForTenantByEntity_Handler,
+			MethodName: "GetLogByEntity",
+			Handler:    _AuditService_GetLogByEntity_Handler,
+		},
+		{
+			MethodName: "GetLogByEntityAndEntityID",
+			Handler:    _AuditService_GetLogByEntityAndEntityID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

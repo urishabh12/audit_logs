@@ -18,12 +18,12 @@ func main() {
 	}
 
 	auditClient := audit_proto.NewAuditServiceClient(conn)
-	auditLog(auditClient)
-	get(auditClient)
-
+	addAuditLog(auditClient)
+	getByEntity(auditClient)
+	getByEntityId(auditClient)
 }
 
-func auditLog(c audit_proto.AuditServiceClient) {
+func addAuditLog(c audit_proto.AuditServiceClient) {
 	req := &audit_proto.LogRequest{
 		TenantID:  211,
 		UserID:    1,
@@ -41,13 +41,27 @@ func auditLog(c audit_proto.AuditServiceClient) {
 	log.Print(res)
 }
 
-func get(c audit_proto.AuditServiceClient) {
+func getByEntity(c audit_proto.AuditServiceClient) {
 	req := &audit_proto.LogByEntityRequest{
 		TenantID:  211,
 		Entity:    "Sample",
 		Timestamp: time.Now().Unix() - 10000,
 	}
-	res, err := c.GetLogForTenantByEntity(context.Background(), req)
+	res, err := c.GetLogByEntity(context.Background(), req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(res.Logs)
+}
+
+func getByEntityId(c audit_proto.AuditServiceClient) {
+	req := &audit_proto.LogByEntityIDRequest{
+		TenantID:  211,
+		Entity:    "Sample",
+		Timestamp: time.Now().Unix() - 10000,
+		EntityID:  11,
+	}
+	res, err := c.GetLogByEntityAndEntityID(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

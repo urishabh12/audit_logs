@@ -33,12 +33,28 @@ func (a *AuditService) Log(req *audit_proto.LogRequest) (*audit_proto.LogRespons
 	}, nil
 }
 
-func (a *AuditService) GetLogForTenantByEntity(req *audit_proto.LogByEntityRequest) (*audit_proto.LogsResponse, error) {
+func (a *AuditService) GetLogByEntity(req *audit_proto.LogByEntityRequest) (*audit_proto.LogsResponse, error) {
 	if req.TenantID == 0 || req.Entity == "" || req.Timestamp == 0 {
 		return nil, errors.New("every request field is required can't be empty")
 	}
 
-	resp, err := a.auditModel.GetTenantLogByEntity(req.TenantID, req.Entity, req.Timestamp)
+	resp, err := a.auditModel.GetLogByEntity(req.TenantID, req.Entity, req.Timestamp)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &audit_proto.LogsResponse{
+		Logs: resp,
+	}
+	return out, nil
+}
+
+func (a *AuditService) GetLogByEntityID(req *audit_proto.LogByEntityIDRequest) (*audit_proto.LogsResponse, error) {
+	if req.TenantID == 0 || req.Entity == "" || req.EntityID == 0 || req.Timestamp == 0 {
+		return nil, errors.New("every request field is required can't be empty")
+	}
+
+	resp, err := a.auditModel.GetLogByEntityID(req.TenantID, req.Entity, req.EntityID, req.Timestamp)
 	if err != nil {
 		return nil, err
 	}

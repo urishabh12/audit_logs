@@ -22,7 +22,12 @@ func (a *AuditServer) Log(ctx context.Context, in *ap.LogRequest) (*ap.LogRespon
 	return out, err
 }
 
-func (a *AuditServer) GetLogForTenantByEntity(ctx context.Context, in *ap.LogByEntityRequest) (*ap.LogsResponse, error) {
-	out, err := a.auditService.GetLogForTenantByEntity(in)
+func (a *AuditServer) GetLogByEntity(ctx context.Context, in *ap.LogByEntityRequest) (*ap.LogsResponse, error) {
+	out, err := a.auditService.GetLogByEntity(in)
+	return out, err
+}
+
+func (a *AuditServer) GetLogByEntityAndEntityID(ctx context.Context, in *ap.LogByEntityIDRequest) (*ap.LogsResponse, error) {
+	out, err := a.auditService.GetLogByEntityID(in)
 	return out, err
 }
