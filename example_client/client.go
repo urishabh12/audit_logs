@@ -61,7 +61,7 @@ func getByEntityId(c audit_proto.AuditServiceClient) {
 		Timestamp: time.Now().Unix() - 10000,
 		EntityID:  11,
 	}
-	res, err := c.GetLogByEntityAndEntityID(context.Background(), req)
+	res, err := c.GetLogByEntityID(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

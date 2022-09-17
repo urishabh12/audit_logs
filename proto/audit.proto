@@ -7,7 +7,8 @@ option go_package = "github.com/urishabh12/audit_logs";
 service AuditService {
     rpc Log(LogRequest) returns (LogResponse) {}
     rpc GetLogByEntity(LogByEntityRequest) returns (LogsResponse) {}
-    rpc GetLogByEntityAndEntityID(LogByEntityIDRequest) returns (LogsResponse) {}
+    rpc GetLogByEntityPaginated(LogByEntityPagedRequest) returns (LogsResponse) {}
+    rpc GetLogByEntityID(LogByEntityIDRequest) returns (LogsResponse) {}
 }
 
 message LogRequest {
@@ -24,6 +25,14 @@ message LogByEntityRequest {
     int64 TenantID = 1;
     string Entity = 5;
     int64 Timestamp = 3;
+}
+
+message LogByEntityPagedRequest {
+    int64 TenantID = 1;
+    string Entity = 2;
+    int64 StartTimestamp = 3;
+    int64 EndTimestamp = 4;
+    int32 PageSize = 5;
 }
 
 message LogByEntityIDRequest {

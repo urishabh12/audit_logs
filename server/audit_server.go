@@ -27,7 +27,12 @@ func (a *AuditServer) GetLogByEntity(ctx context.Context, in *ap.LogByEntityRequ
 	return out, err
 }
 
-func (a *AuditServer) GetLogByEntityAndEntityID(ctx context.Context, in *ap.LogByEntityIDRequest) (*ap.LogsResponse, error) {
+func (a *AuditServer) GetLogByEntityPaginated(ctx context.Context, in *ap.LogByEntityPagedRequest) (*ap.LogsResponse, error) {
+	out, err := a.auditService.GetLogByEntityPaginated(in)
+	return out, err
+}
+
+func (a *AuditServer) GetLogByEntityID(ctx context.Context, in *ap.LogByEntityIDRequest) (*ap.LogsResponse, error) {
 	out, err := a.auditService.GetLogByEntityID(in)
 	return out, err
 }

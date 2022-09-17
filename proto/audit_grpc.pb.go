@@ -24,7 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type AuditServiceClient interface {
 	Log(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	GetLogByEntity(ctx context.Context, in *LogByEntityRequest, opts ...grpc.CallOption) (*LogsResponse, error)
-	GetLogByEntityAndEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	GetLogByEntityPaginated(ctx context.Context, in *LogByEntityPagedRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	GetLogByEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 }
 
 type auditServiceClient struct {
@@ -53,9 +54,18 @@ func (c *auditServiceClient) GetLogByEntity(ctx context.Context, in *LogByEntity
 	return out, nil
 }
 
-func (c *auditServiceClient) GetLogByEntityAndEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
+func (c *auditServiceClient) GetLogByEntityPaginated(ctx context.Context, in *LogByEntityPagedRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
 	out := new(LogsResponse)
-	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogByEntityAndEntityID", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogByEntityPaginated", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *auditServiceClient) GetLogByEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
+	out := new(LogsResponse)
+	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogByEntityID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +78,8 @@ func (c *auditServiceClient) GetLogByEntityAndEntityID(ctx context.Context, in *
 type AuditServiceServer interface {
 	Log(context.Context, *LogRequest) (*LogResponse, error)
 	GetLogByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error)
-	GetLogByEntityAndEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error)
+	GetLogByEntityPaginated(context.Context, *LogByEntityPagedRequest) (*LogsResponse, error)
+	GetLogByEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error)
 }
 
 // UnimplementedAuditServiceServer should be embedded to have forward compatible implementations.
@@ -81,8 +92,11 @@ func (UnimplementedAuditServiceServer) Log(context.Context, *LogRequest) (*LogRe
 func (UnimplementedAuditServiceServer) GetLogByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntity not implemented")
 }
-func (UnimplementedAuditServiceServer) GetLogByEntityAndEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntityAndEntityID not implemented")
+func (UnimplementedAuditServiceServer) GetLogByEntityPaginated(context.Context, *LogByEntityPagedRequest) (*LogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntityPaginated not implemented")
+}
+func (UnimplementedAuditServiceServer) GetLogByEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntityID not implemented")
 }
 
 // UnsafeAuditServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -132,20 +146,38 @@ func _AuditService_GetLogByEntity_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuditService_GetLogByEntityAndEntityID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuditService_GetLogByEntityPaginated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogByEntityPagedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditServiceServer).GetLogByEntityPaginated(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/audit.AuditService/GetLogByEntityPaginated",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditServiceServer).GetLogByEntityPaginated(ctx, req.(*LogByEntityPagedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuditService_GetLogByEntityID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LogByEntityIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuditServiceServer).GetLogByEntityAndEntityID(ctx, in)
+		return srv.(AuditServiceServer).GetLogByEntityID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/audit.AuditService/GetLogByEntityAndEntityID",
+		FullMethod: "/audit.AuditService/GetLogByEntityID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuditServiceServer).GetLogByEntityAndEntityID(ctx, req.(*LogByEntityIDRequest))
+		return srv.(AuditServiceServer).GetLogByEntityID(ctx, req.(*LogByEntityIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -166,8 +198,12 @@ var AuditService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuditService_GetLogByEntity_Handler,
 		},
 		{
-			MethodName: "GetLogByEntityAndEntityID",
-			Handler:    _AuditService_GetLogByEntityAndEntityID_Handler,
+			MethodName: "GetLogByEntityPaginated",
+			Handler:    _AuditService_GetLogByEntityPaginated_Handler,
+		},
+		{
+			MethodName: "GetLogByEntityID",
+			Handler:    _AuditService_GetLogByEntityID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
