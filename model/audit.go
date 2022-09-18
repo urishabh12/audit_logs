@@ -45,6 +45,13 @@ func (a *AuditModel) GetLogByEntityID(tenant_id int64, entity string, entity_id 
 	return scanAuditLogResponseByEntityId(resp, entity_id)
 }
 
+func (a *AuditModel) GetLogByEntityIDPaginated(tenant_id int64, entity string, entity_id int64, start_timestamp int64, end_timestamp int64, page_size int32) ([]*audit_proto.AuditLog, error) {
+	query := getLogByEntityPaginatedQuery(tenant_id, entity, start_timestamp, end_timestamp, page_size)
+	log.Println("[Cassandra]", query)
+	resp := a.cassandraSession.Query(query).Iter().Scanner()
+	return scanAuditLogResponseByEntityId(resp, entity_id)
+}
+
 func scanAuditLogResponse(scanner gocql.Scanner) ([]*audit_proto.AuditLog, error) {
 	out := []*audit_proto.AuditLog{}
 
@@ -83,7 +90,7 @@ func insertLogQuery(req *audit_proto.LogRequest) string {
 }
 
 func getLogByEntityQuery(tenant_id int64, entity string, timestamp int64) string {
-	return fmt.Sprintf("SELECT tenant_id, user_id, time_stamp, entity_id, entity, action, data FROM audit.audit_logs WHERE tenant_id = %d and entity = '%s' and time_stamp >= %d;", tenant_id, entity, timestamp)
+	return fmt.Sprintf("SELECT tenant_id, user_id, time_stamp, entity_id, entity, action, data FROM audit.audit_logs WHERE tenant_id = %d and entity = '%s' and time_stamp >= %d LIMIT 1000;", tenant_id, entity, timestamp)
 }
 
 func getLogByEntityPaginatedQuery(tenant_id int64, entity string, start_timestamp int64, end_timestamp int64, page_size int32) string {

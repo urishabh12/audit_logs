@@ -81,6 +81,22 @@ func (a *AuditService) GetLogByEntityID(req *audit_proto.LogByEntityIDRequest) (
 	return out, nil
 }
 
+func (a *AuditService) GetLogByEntityIDPaginated(req *audit_proto.LogByEntityIDPagedRequest) (*audit_proto.LogsResponse, error) {
+	if req.TenantID == 0 || req.Entity == "" || req.EntityID == 0 || req.StartTimestamp == 0 || req.EndTimestamp == 0 || req.PageSize == 0 {
+		return nil, errors.New("every request field is required can't be empty")
+	}
+
+	resp, err := a.auditModel.GetLogByEntityIDPaginated(req.TenantID, req.Entity, req.EntityID, req.StartTimestamp, req.EndTimestamp, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &audit_proto.LogsResponse{
+		Logs: resp,
+	}
+	return out, nil
+}
+
 func verifyLogRequest(req *audit_proto.LogRequest) error {
 	if req.TenantID == 0 || req.UserID == 0 || req.EntityID == 0 || req.Entity == "" || req.Action == "" || req.Timestamp == 0 {
 		return errors.New("every request field is required can't be empty")

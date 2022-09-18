@@ -26,6 +26,7 @@ type AuditServiceClient interface {
 	GetLogByEntity(ctx context.Context, in *LogByEntityRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 	GetLogByEntityPaginated(ctx context.Context, in *LogByEntityPagedRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 	GetLogByEntityID(ctx context.Context, in *LogByEntityIDRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	GetLogByEntityIDPaginated(ctx context.Context, in *LogByEntityIDPagedRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 }
 
 type auditServiceClient struct {
@@ -72,6 +73,15 @@ func (c *auditServiceClient) GetLogByEntityID(ctx context.Context, in *LogByEnti
 	return out, nil
 }
 
+func (c *auditServiceClient) GetLogByEntityIDPaginated(ctx context.Context, in *LogByEntityIDPagedRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
+	out := new(LogsResponse)
+	err := c.cc.Invoke(ctx, "/audit.AuditService/GetLogByEntityIDPaginated", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuditServiceServer is the server API for AuditService service.
 // All implementations should embed UnimplementedAuditServiceServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type AuditServiceServer interface {
 	GetLogByEntity(context.Context, *LogByEntityRequest) (*LogsResponse, error)
 	GetLogByEntityPaginated(context.Context, *LogByEntityPagedRequest) (*LogsResponse, error)
 	GetLogByEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error)
+	GetLogByEntityIDPaginated(context.Context, *LogByEntityIDPagedRequest) (*LogsResponse, error)
 }
 
 // UnimplementedAuditServiceServer should be embedded to have forward compatible implementations.
@@ -97,6 +108,9 @@ func (UnimplementedAuditServiceServer) GetLogByEntityPaginated(context.Context, 
 }
 func (UnimplementedAuditServiceServer) GetLogByEntityID(context.Context, *LogByEntityIDRequest) (*LogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntityID not implemented")
+}
+func (UnimplementedAuditServiceServer) GetLogByEntityIDPaginated(context.Context, *LogByEntityIDPagedRequest) (*LogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLogByEntityIDPaginated not implemented")
 }
 
 // UnsafeAuditServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -182,6 +196,24 @@ func _AuditService_GetLogByEntityID_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuditService_GetLogByEntityIDPaginated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogByEntityIDPagedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditServiceServer).GetLogByEntityIDPaginated(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/audit.AuditService/GetLogByEntityIDPaginated",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditServiceServer).GetLogByEntityIDPaginated(ctx, req.(*LogByEntityIDPagedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuditService_ServiceDesc is the grpc.ServiceDesc for AuditService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -204,6 +236,10 @@ var AuditService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetLogByEntityID",
 			Handler:    _AuditService_GetLogByEntityID_Handler,
+		},
+		{
+			MethodName: "GetLogByEntityIDPaginated",
+			Handler:    _AuditService_GetLogByEntityIDPaginated_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

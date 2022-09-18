@@ -9,6 +9,7 @@ service AuditService {
     rpc GetLogByEntity(LogByEntityRequest) returns (LogsResponse) {}
     rpc GetLogByEntityPaginated(LogByEntityPagedRequest) returns (LogsResponse) {}
     rpc GetLogByEntityID(LogByEntityIDRequest) returns (LogsResponse) {}
+    rpc GetLogByEntityIDPaginated(LogByEntityIDPagedRequest) returns (LogsResponse) {}
 }
 
 message LogRequest {
@@ -40,6 +41,15 @@ message LogByEntityIDRequest {
     string Entity = 2;
     int64 EntityID = 3;
     int64 Timestamp = 4;
+}
+
+message LogByEntityIDPagedRequest {
+    int64 TenantID = 1;
+    string Entity = 2;
+    int64 EntityID = 3;
+    int64 StartTimestamp = 4;
+    int64 EndTimestamp = 5;
+    int32 PageSize = 6;
 }
 
 message LogsResponse {
