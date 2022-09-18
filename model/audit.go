@@ -87,5 +87,5 @@ func getLogByEntityQuery(tenant_id int64, entity string, timestamp int64) string
 }
 
 func getLogByEntityPaginatedQuery(tenant_id int64, entity string, start_timestamp int64, end_timestamp int64, page_size int32) string {
-	return fmt.Sprintf("SELECT tenant_id, user_id, time_stamp, entity_id, entity, action, data FROM audit.audit_logs WHERE tenant_id= %d and entity = '%s' and time_stamp <= %d and time_stamp >= %d and LIMIT %d;", tenant_id, entity, start_timestamp, end_timestamp, page_size)
+	return fmt.Sprintf("SELECT tenant_id, user_id, time_stamp, entity_id, entity, action, data FROM audit.audit_logs WHERE tenant_id= %d and entity = '%s' and time_stamp <= %d and time_stamp >= %d LIMIT %d;", tenant_id, entity, start_timestamp, end_timestamp, page_size)
 }

@@ -19,7 +19,11 @@ func main() {
 
 	auditClient := audit_proto.NewAuditServiceClient(conn)
 	addAuditLog(auditClient)
+	log.Println("<<<<<<<<<<<<<<<<Get Log by Entity Paged>>>>>>>>>>>>>>>>>")
+	getByEntityPaged(auditClient)
+	log.Println("<<<<<<<<<<<<<<<<Get Log by Entity>>>>>>>>>>>>>>>>>")
 	getByEntity(auditClient)
+	log.Println("<<<<<<<<<<<<<<<<Get Log by Entity Id>>>>>>>>>>>>>>>>>")
 	getByEntityId(auditClient)
 }
 
@@ -48,6 +52,21 @@ func getByEntity(c audit_proto.AuditServiceClient) {
 		Timestamp: time.Now().Unix() - 10000,
 	}
 	res, err := c.GetLogByEntity(context.Background(), req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(res.Logs)
+}
+
+func getByEntityPaged(c audit_proto.AuditServiceClient) {
+	req := &audit_proto.LogByEntityPagedRequest{
+		TenantID:       211,
+		Entity:         "Sample",
+		StartTimestamp: time.Now().Unix(),
+		EndTimestamp:   time.Now().Unix() - 10000,
+		PageSize:       2,
+	}
+	res, err := c.GetLogByEntityPaginated(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}
