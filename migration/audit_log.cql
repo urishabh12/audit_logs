@@ -12,4 +12,5 @@ CREATE TABLE audit.audit_logs (
     action text,
     data text,
     PRIMARY KEY ((tenant_id), entity, time_stamp)
-);
+)
+WITH CLUSTERING ORDER BY (entity ASC, time_stamp DESC);
