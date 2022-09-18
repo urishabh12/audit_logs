@@ -1,8 +1,3 @@
-CREATE KEYSPACE audit WITH REPLICATION = { 
-   'class' : 'SimpleStrategy',
-   'replication_factor' : 1
-};
-
 CREATE TABLE audit.audit_logs (
     tenant_id bigint,
     user_id bigint,
